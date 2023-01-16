@@ -1,4 +1,3 @@
-
 # importing modules
 import urllib.request 
 from bs4 import BeautifulSoup
@@ -26,7 +25,17 @@ def find_course_by_number(course_name:str):
     course_name=re.split('[- \n]',course_name.strip().lower())
 
     # get the right url from website
-    url=f"https://bulletins.psu.edu/university-course-descriptions/undergraduate/{course_name[0]}/"
+    if int(course_name[1])<500:
+        url=f"https://bulletins.psu.edu/university-course-descriptions/undergraduate/{course_name[0]}/"
+    elif int(course_name[1])<=799 and int(course_name[1])>=700:
+        url=f"https://bulletins.psu.edu/university-course-descriptions/medicine/{course_name[0]}/"
+    elif (int(course_name[1])<=699 and int(course_name[1])>=500) or (int(course_name[1])<=899 and int(course_name[1])>=800):
+        url=f"https://bulletins.psu.edu/university-course-descriptions/graduate/{course_name[0]}/"
+    elif int(course_name[1])<=999 and int(course_name[1])>=900:
+        try:
+            url=f"https://bulletins.psu.edu/university-course-descriptions/dickinsonlaw/{course_name[0]}/"
+        finally:
+            url=f"https://bulletins.psu.edu/university-course-descriptions/pennstatelaw/{course_name[0]}/"
     soup=read_page(url)
 
     # look for the right course
@@ -36,6 +45,19 @@ def find_course_by_number(course_name:str):
 
         if course[2].contents[0]==course_name[1]:
             return p
+    
+    return None
+
+def get_course_name(soup):
+    return soup.find(class_="course_codetitle").contents[0]
+
+def get_course_credits(soup):
+    credit_string=soup.find(class_="course_credits").contents[0].strip()
+    credit_number=credit_string.split(" ")[0]
+    return credit_string
+
+def get_course_desc(soup):
+    return soup.find(class_="courseblockdesc").find("p").get_text().strip()
 
 
 
@@ -45,7 +67,8 @@ def run_tests():
     doctest.testmod(verbose=True)
 
 if __name__== "__main__":
+    i=find_course_by_number("AULWR 997 ")
     print(
-        find_course_by_number("Math 140 ")
+        get_course_desc(i)
     )
     #run_tests()
