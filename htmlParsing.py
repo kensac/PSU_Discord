@@ -36,6 +36,7 @@ def find_course_by_number(course_name:str):
             url=f"https://bulletins.psu.edu/university-course-descriptions/dickinsonlaw/{course_name[0]}/"
         finally:
             url=f"https://bulletins.psu.edu/university-course-descriptions/pennstatelaw/{course_name[0]}/"
+    
     soup=read_page(url)
 
     # look for the right course
@@ -57,11 +58,19 @@ def get_course_credits(soup):
     return credit_string
 
 def get_course_desc(soup):
+    #fix this
     try:
         return soup.find(class_="courseblockdesc").find("p").get_text().strip()
-    finally:
+    except AttributeError:
         return None
 
+def get_all_info(soup) -> list:
+
+    name=get_course_name(soup)
+    credits=get_course_credits(soup)
+    desc=get_course_desc(soup)
+
+    return [name,credits,desc]
 
 
 def run_tests():
@@ -70,7 +79,7 @@ def run_tests():
     doctest.testmod(verbose=True)
 
 if __name__== "__main__":
-    i=find_course_by_number("AULWR 997 ")
+    i=find_course_by_number("comm 150n")
     print(
         get_course_desc(i)
     )
