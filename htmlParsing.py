@@ -50,12 +50,18 @@ def find_course_by_number(course_name:str):
     return None
 
 def get_course_name(soup):
-    return soup.find(class_="course_codetitle").contents[0]
+    try:
+        return soup.find(class_="course_codetitle").contents[0]
+    except AttributeError:
+        return None
 
 def get_course_credits(soup):
-    credit_string=soup.find(class_="course_credits").contents[0].strip()
-    credit_number=credit_string.split(" ")[0]
-    return credit_string
+    try:
+        credit_string=soup.find(class_="course_credits").contents[0].strip()
+        credit_number=credit_string.split(" ")[0]
+        return credit_string
+    except AttributeError:
+        return None
 
 def get_course_desc(soup):
     try:
@@ -63,13 +69,30 @@ def get_course_desc(soup):
     except AttributeError:
         return None
 
-def get_all_info(soup) -> list:
+def get_course_extras(soup):
+    try:
+        res=[]
+        
+        if soup.find_all(class_="noindent courseblockextra") :
+            for i in soup.find_all(class_="noindent courseblockextra"):
+                res.append(i.get_text().strip().replace("\n\t\t\t\n\n\t\t\t\t","\n"))
+        
+        return res
+    except AttributeError:
+        return [None]
 
+def get_all_info(soup) -> list:
+    
     name=get_course_name(soup)
     credits=get_course_credits(soup)
     desc=get_course_desc(soup)
+    res=[name,credits,desc]
 
-    return [name,credits,desc]
+    extras=get_course_extras(soup)
+    res+=extras
+
+    return res
+    
 
 
 def run_tests():
@@ -78,8 +101,8 @@ def run_tests():
     doctest.testmod(verbose=True)
 
 if __name__== "__main__":
-    i=find_course_by_number("comm 150n")
-    print(i,
-        get_course_desc(i)
+    i=find_course_by_number("cmpsc 101")
+    print(
+        get_all_info(i)
     )
     #run_tests()
