@@ -28,6 +28,6 @@ async def info(message):
 
     # implement something that can handle over 2000 charecters
 
-    await message.channel.send(f'{result[0]}\n{result[1]}\n{result[2]}')
+    await message.channel.send(f"```{result[0]}\n\n{result[1]}\n\n{result[2]}```")
 
 bot.run(TOKEN)

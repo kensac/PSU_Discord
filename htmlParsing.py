@@ -23,28 +23,28 @@ def read_page(url:str)-> BeautifulSoup:
 def find_course_by_number(course_name:str):
     # clean up course name
     course_name=re.split('[- \n]',course_name.strip().lower())
+    course_name.append(''.join(x for x in course_name[1] if x.isnumeric()))
+    
 
     # get the right url from website
-    if int(course_name[1])<500:
+    if int(course_name[2])<500:
         url=f"https://bulletins.psu.edu/university-course-descriptions/undergraduate/{course_name[0]}/"
-    elif int(course_name[1])<=799 and int(course_name[1])>=700:
+    elif int(course_name[2])<=799 and int(course_name[2])>=700:
         url=f"https://bulletins.psu.edu/university-course-descriptions/medicine/{course_name[0]}/"
-    elif (int(course_name[1])<=699 and int(course_name[1])>=500) or (int(course_name[1])<=899 and int(course_name[1])>=800):
+    elif (int(course_name[2])<=699 and int(course_name[2])>=500) or (int(course_name[2])<=899 and int(course_name[2])>=800):
         url=f"https://bulletins.psu.edu/university-course-descriptions/graduate/{course_name[0]}/"
-    elif int(course_name[1])<=999 and int(course_name[1])>=900:
+    elif int(course_name[2])<=999 and int(course_name[2])>=900:
         try:
             url=f"https://bulletins.psu.edu/university-course-descriptions/dickinsonlaw/{course_name[0]}/"
         finally:
             url=f"https://bulletins.psu.edu/university-course-descriptions/pennstatelaw/{course_name[0]}/"
     
     soup=read_page(url)
-
     # look for the right course
     courses=soup.find_all(class_="courseblock")
     for p in courses:
         course=p.find(class_="course_code").contents
-
-        if course[2].contents[0]==course_name[1]:
+        if course[2].contents[0].lower()==course_name[1]:
             return p
     
     return None
@@ -58,7 +58,6 @@ def get_course_credits(soup):
     return credit_string
 
 def get_course_desc(soup):
-    #fix this
     try:
         return soup.find(class_="courseblockdesc").find("p").get_text().strip()
     except AttributeError:
