@@ -21,8 +21,11 @@ async def on_ready():
 
 @bot.command(name='info', aliases=['i'])
 async def info(message):
-
-    text=message.message.content.lower().strip("$info").strip()
+    if message.message.content.lower().startswith('$info'):
+        text=message.message.content.lower().replace("$info",'').strip()
+    else:
+        text=message.message.content.lower().replace("$i",'').strip()
+        
     soup=htmlParsing.find_course_by_number(text)
     result=htmlParsing.get_all_info(soup)
 

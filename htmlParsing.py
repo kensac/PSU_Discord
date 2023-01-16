@@ -79,7 +79,7 @@ def run_tests():
 
 if __name__== "__main__":
     i=find_course_by_number("comm 150n")
-    print(
+    print(i,
         get_course_desc(i)
     )
     #run_tests()
