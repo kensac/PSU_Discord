@@ -21,12 +21,23 @@ def read_page(url:str)-> BeautifulSoup:
 
     return soup
 
-def find_course(soup, course_name:str):
+def find_course_by_number(course_name:str):
     # clean up course name
     course_name=re.split('[- \n]',course_name.strip().lower())
+
+    # get the right url from website
+    url=f"https://bulletins.psu.edu/university-course-descriptions/undergraduate/{course_name[0]}/"
+    soup=read_page(url)
+
+    # look for the right course
     courses=soup.find_all(class_="courseblock")
     for p in courses:
-        p.find(class_="course_code").contents
+        course=p.find(class_="course_code").contents
+
+        if course[2].contents[0]==course_name[1]:
+            return p
+
+
 
 def run_tests():
     import doctest
@@ -35,6 +46,6 @@ def run_tests():
 
 if __name__== "__main__":
     print(
-        find_course(read_page(testUrl),"INART-1 ")
+        find_course_by_number("Math 140 ")
     )
     #run_tests()
