@@ -57,7 +57,10 @@ def get_course_credits(soup):
     return credit_string
 
 def get_course_desc(soup):
-    return soup.find(class_="courseblockdesc").find("p").get_text().strip()
+    try:
+        return soup.find(class_="courseblockdesc").find("p").get_text().strip()
+    finally:
+        return None
 
 
 
