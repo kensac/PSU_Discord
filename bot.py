@@ -63,4 +63,26 @@ async def credits(message):
     else:
         await message.channel.send(f"```{text.upper()} could not be found.```")
 
+@bot.command(name='extras', aliases=['e'])
+async def credits(message):
+    if message.message.content.lower().startswith('$extras'):
+        text=message.message.content.lower().replace("$extras",'').strip()
+    else:
+        text=message.message.content.lower().replace("$e",'').strip()
+        
+    soup=htmlParsing.find_course_by_number(text)
+    result=htmlParsing.get_all_info(soup)
+
+    
+
+    if result[0]:
+        output=f"{result[0]}\n\n"+'\n\n'.join(i for i in result[3:])
+
+        # implement something that can handle over 2000 charecters
+
+        await message.channel.send(f"```{output}```")
+    
+    else:
+        await message.channel.send(f"```{text.upper()} could not be found.```")
+
 bot.run(TOKEN)
