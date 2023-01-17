@@ -85,4 +85,18 @@ async def credits(message):
     else:
         await message.channel.send(f"```{text.upper()} could not be found.```")
 
+@bot.command(name='attr', aliases=["a"])
+async def attr(message):
+    if message.message.content.lower().startswith('$attr'):
+        text=message.message.content.lower().replace("$attr",'').strip()
+    else:
+        text=message.message.content.lower().replace("$a",'').strip()
+    
+    result=htmlParsing.find_by_attribute(text)
+    
+    if result[0]:
+        output='\n'.join("\t".join(i) for i in result)
+
+        await message.channel.send(f"```{output}```")
+
 bot.run(TOKEN)

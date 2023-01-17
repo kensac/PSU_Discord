@@ -20,7 +20,7 @@ def read_page(url:str)-> BeautifulSoup:
 
     return soup
 
-def find_course_by_number(course_name:str):
+def find_course_by_number(course_name:str) -> BeautifulSoup:
     # clean up course name
     course_name=re.split('[- \n]',course_name.strip().lower())
     course_name.append(''.join(x for x in course_name[1] if x.isnumeric()))
@@ -49,13 +49,13 @@ def find_course_by_number(course_name:str):
     
     return None
 
-def get_course_name(soup):
+def get_course_name(soup:BeautifulSoup) -> str:
     try:
         return soup.find(class_="course_codetitle").contents[0]
     except AttributeError:
         return None
 
-def get_course_credits(soup):
+def get_course_credits(soup:BeautifulSoup) -> str:
     try:
         credit_string=soup.find(class_="course_credits").contents[0].strip()
         credit_number=credit_string.split(" ")[0]
@@ -63,13 +63,13 @@ def get_course_credits(soup):
     except AttributeError:
         return None
 
-def get_course_desc(soup):
+def get_course_desc(soup:BeautifulSoup) -> str:
     try:
         return soup.find(class_="courseblockdesc").find("p").get_text().strip()
     except AttributeError:
         return None
 
-def get_course_extras(soup):
+def get_course_extras(soup:BeautifulSoup) -> list:
     try:
         res=[]
         
@@ -81,7 +81,7 @@ def get_course_extras(soup):
     except AttributeError:
         return [None]
 
-def get_all_info(soup) -> list:
+def get_all_info(soup:BeautifulSoup) -> list:
     
     name=get_course_name(soup)
     credits=get_course_credits(soup)
@@ -92,8 +92,36 @@ def get_all_info(soup) -> list:
     res+=extras
 
     return res
-    
 
+def find_by_attribute(attribute:str) -> list:
+    d={
+        "arts":"https://bulletins.psu.edu/undergraduate/general-education/course-lists/arts/",
+        "health":"https://bulletins.psu.edu/undergraduate/general-education/course-lists/health-wellness/",
+        "humanities":"https://bulletins.psu.edu/undergraduate/general-education/course-lists/humanities/",
+        "science":"https://bulletins.psu.edu/undergraduate/general-education/course-lists/natural-sciences/",
+        "quantification":"https://bulletins.psu.edu/undergraduate/general-education/course-lists/quantification/",
+        "social":"https://bulletins.psu.edu/undergraduate/general-education/course-lists/quantification/",
+        "writing":"https://bulletins.psu.edu/undergraduate/general-education/course-lists/writing-speaking/"
+    }
+
+    if attribute in d:
+        
+        url=d[attribute]
+        soup=read_page(url)
+        courses=[]
+        for i in soup.find_all(class_="even"):
+            res=[]
+            #courses.append(i.find(class_="code").get_text())
+            course=i.find_all("td")
+            for j in course:
+                res.append(j.get_text())
+            courses.append(res)
+        return courses
+    else:
+        return [None]
+        
+def get_by_attribute(attribute:str) -> list :
+    pass
 
 def run_tests():
     import doctest
@@ -101,8 +129,6 @@ def run_tests():
     doctest.testmod(verbose=True)
 
 if __name__== "__main__":
-    i=find_course_by_number("cmpsc 101")
-    print(
-        get_all_info(i)
-    )
+    #print(find_by_attribute(i))
     #run_tests()
+    pass
